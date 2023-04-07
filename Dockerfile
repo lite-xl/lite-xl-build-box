@@ -31,8 +31,3 @@ RUN apt-get update && apt-get upgrade && \
 # install libdecor
 RUN dpkg --force-all -i libdecor-0-dev_0.1.0-3build1_amd64.deb libdecor-0-0_0.1.0-3build1_amd64.deb
 
-# set up user for fuse
-RUN groupadd fuse && useradd -mG fuse ci
-
-USER ci
-
