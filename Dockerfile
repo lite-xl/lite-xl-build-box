@@ -25,7 +25,7 @@ ADD libdecor-0-dev_0.1.0-3build1_amd64.deb libdecor-0-0_0.1.0-3build1_amd64.deb 
 
 # install deps
 RUN apt-get update && apt-get upgrade && \
-	apt-get install -qy python3 python3-pip build-essential git cmake libfuse2 wayland-protocols libsdl2-dev && \
+	apt-get install -y sudo ccache python3 python3-pip build-essential git cmake libfuse2 wayland-protocols libsdl2-dev && \
 	pip3 install meson ninja
 
 # install libdecor
