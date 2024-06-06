@@ -36,4 +36,4 @@ RUN sudo add-apt-repository -y ppa:git-core/ppa && \
 # install libdecor
 RUN dpkg --force-all -i libdecor-0-dev_0.1.0-3build1_amd64.deb libdecor-0-0_0.1.0-3build1_amd64.deb
 
-SHELL [ "/bin/bash", "--login", "-e", "-o", "pipefail", "-c" ]
+ADD entrypoint.sh /
