@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Checkout Lite XL
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: lite-xl/lite-xl
           path: lite-xl
