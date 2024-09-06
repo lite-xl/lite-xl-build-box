@@ -21,7 +21,7 @@
 FROM quay.io/pypa/manylinux2014_x86_64
 
 # these files are from RHEL8
-ADD libdecor-devel-0.1.0-3.el8.x86_64.rpm /
+ADD libdecor-devel-0.1.0-3.el8.x86_64.rpm libdecor-0.1.0-3.el8.x86_64.rpm /
 
 # install deps
 RUN yum -y update && yum clean all && \
@@ -34,6 +34,7 @@ RUN source /opt/rh/rh-python38/enable && pip3 install meson ninja
 
 # install libdecor
 RUN rpm -ivh --nodeps libdecor-devel-0.1.0-3.el8.x86_64.rpm
+RUN rpm -ivh --nodeps libdecor-0.1.0-3.el8.x86_64.rpm
 
 ADD entrypoint-manylinux.sh /entrypoint.sh
 
