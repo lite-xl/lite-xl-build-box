@@ -1,8 +1,6 @@
 name: Create and publish Docker image
 
-on:
-  push:
-    tags: [v*]
+on: [push]
 
 env:
   REGISTRY: ghcr.io
@@ -15,12 +13,25 @@ jobs:
       contents: read
       packages: write
 
+    strategy:
+      fail-fast: true
+      matrix:
+        docker:
+          - { dockerfile: 'Dockerfile-ubuntu', suffix: '' }
+          - { dockerfile: 'Dockerfile-manylinux', suffix: '-manylinux' }
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Checkout Lite XL
+        uses: actions/checkout@v3
+        with:
+          repository: lite-xl/lite-xl
+          path: lite-xl
+
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -28,14 +39,31 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.docker.suffix }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
         with:
           context: .
+          file: ${{ matrix.docker.dockerfile }}
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Test Docker Image
+        run: |
+          docker run --entrypoint /entrypoint.sh -v "$(pwd)/lite-xl":"/lite-xl" --rm \
+          "${DOCKER_METADATA_OUTPUT_TAGS%%$'\n'*}" cd /lite-xl '&&' meson setup --wrap-mode=forcefallback build
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          context: .
+          file: ${{ matrix.docker.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+

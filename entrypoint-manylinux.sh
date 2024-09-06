@@ -2,7 +2,9 @@
 
 SCRIPT="$(mktemp)"
 
-printf '#!/bin/bash\n' > "$SCRIPT"
 printf '%s' "$*" >> "$SCRIPT"
 
+source /opt/rh/rh-python38/enable
+
 exec /bin/bash --login -e -o pipefail "$SCRIPT"
+
