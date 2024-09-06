@@ -25,7 +25,7 @@ ADD libdecor-devel-0.1.0-3.el8.x86_64.rpm libdecor-0.1.0-3.el8.x86_64.rpm /
 
 # install deps
 RUN yum -y update && yum clean all && \
-	yum -y install rh-python38 ccache fuse fuse3 sudo \
+	yum -y install wget curl zip unzip rh-python38 ccache fuse fuse3 sudo \
 	libX11-devel libXi-devel libXcursor-devel libxkbcommon-devel libXrandr-devel wayland-devel wayland-protocols-devel dbus-devel ibus-devel SDL2-devel \
 	gcc-aarch64-linux-gnu gcc-c++-aarch64-linux-gnu binutils-aarch64-linux-gnu
 

@@ -15,6 +15,10 @@ any broken dependencies error during installation.
 
 # Installed packages
 
+- `wget`
+- `curl`
+- `zip`
+- `unzip`
 - `ccache`
 - `sudo`
 - `rh-python38` (configured as `python3`)
