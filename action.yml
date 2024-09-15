@@ -1,0 +1,66 @@
+# action.yml
+name: "Lite XL Build Box Action"
+description: "Runs a command inside Lite XL Build Box."
+inputs:
+  image:
+    description: "Image name."
+    required: false
+    default: ghcr.io/${{ github.repository }}-manylinux:latest
+  volumes:
+    description: "A list of volumes to mount."
+    required: false
+  options:
+    description: 'Extra options passed to "docker run".'
+    required: false
+  run:
+    description: 'A list of commands to run inside the container (mutually exclusive with "run-args").'
+    required: false
+  run_args:
+    description: 'A list of arguments passed to "docker run" after the image name (mutually exclusive with "run").'
+    required: false
+  shell:
+    description: "Use a specific shell or entrypoint."
+    required: false
+    default: bash
+  platform:
+    description: "The platform to run the container on."
+    required: false
+  registry:
+    description: "Container Registry."
+    required: false
+  username:
+    description: "Username."
+    required: false
+  password:
+    description: "Password."
+    required: false
+  docker_network:
+    description: "Docker Network ID."
+    default: ${{ job.container.network }}
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Login into registry
+      if: inputs.username != '' && inputs.password != '' && inputs.registry != ''
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
+
+    - name: Run Docker
+      shell: bash
+      env:
+        INPUT_IMAGE: ${{ inputs.image }}
+        INPUT_VOLUMES: ${{ inputs.volumes }}
+        INPUT_OPTIONS: ${{ inputs.options }}
+        INPUT_RUN: ${{ inputs.run }}
+        INPUT_RUN_ARGS: ${{ inputs.run_args }}
+        INPUT_SHELL: ${{ inputs.shell }}
+        INPUT_REGISTRY: ${{ inputs.registry }}
+        INPUT_USERNAME: ${{ inputs.username }}
+        INPUT_PASSWORD: ${{ inputs.password }}
+        INPUT_DOCKER_NETWORK: ${{ inputs.docker_network }}
+        INPUT_PLATFORM: ${{ inputs.platform }}
+      run: "$GITHUB_ACTION_PATH/entrypoint.sh"

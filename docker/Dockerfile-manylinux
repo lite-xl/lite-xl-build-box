@@ -1,0 +1,61 @@
+# Copyright (c) 2023-Present Lite XL Contributors
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# https://github.com/lukewiwa/manylinux2014
+# this image supports multi-platform builds
+FROM docker.io/lukewiwa/manylinux2014
+
+# add the entrypoint into the image
+COPY entrypoint.sh /
+
+# use CPython 3.11
+ARG PYTHON_VERSION=cp311-cp311
+
+# get TARGETARCH from buildx
+ARG TARGETARCH
+
+# use the manylinux built-in CPython
+ENV PATH="/opt/python/$PYTHON_VERSION/bin:$PATH"
+
+# install epel on aarch64 because it is not included
+RUN if [[ $TARGETARCH = 'arm64' ]]; then \
+		yum -y update && \
+		yum -y install "https://archives.fedoraproject.org/pub/archive/epel/7/$(rpm --eval '%{_arch}')/Packages/e/epel-release-7-12.noarch.rpm" && \
+		yum -y clean all && \
+		rm -fr /var/cache; \
+	fi
+
+# install deps
+RUN yum -y update && \
+	yum -y install wget curl zip unzip ccache fuse fuse3 sudo \
+		libX11-devel libXi-devel libXcursor-devel libxkbcommon-devel libXrandr-devel wayland-devel wayland-protocols-devel dbus-devel ibus-devel SDL2-devel \
+		gcc-aarch64-linux-gnu gcc-c++-aarch64-linux-gnu binutils-aarch64-linux-gnu && \
+	yum -y clean all && \
+	rm -fr /var/cache
+
+# install meson and ninja
+RUN pip install --no-cache-dir --no-compile meson ninja
+
+# pretend to have libdecor installed
+RUN rpm -i --force --nodeps --ignorearch "https://pkgs.sysadmins.ws/el8/extras/x86_64/libdecor-devel-0.1.0-3.el8.x86_64.rpm" && \
+	touch /usr/lib64/libdecor-0.so /usr/lib64/libdecor-0.so.0 && \
+	yum -y history sync && \
+	yum -y clean all && \
+	rm -fr /var/cache
