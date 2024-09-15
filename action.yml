@@ -63,4 +63,5 @@ runs:
         INPUT_PASSWORD: ${{ inputs.password }}
         INPUT_DOCKER_NETWORK: ${{ inputs.docker_network }}
         INPUT_PLATFORM: ${{ inputs.platform }}
+        INPUT_ACTIONS_ENV: ${{ toJson(env) }}
       run: "$GITHUB_ACTION_PATH/entrypoint.sh"
