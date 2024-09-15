@@ -21,6 +21,10 @@ main() {
         echo -e "${COLOR_RED}error: run and run-args are mutually exclusive.${COLOR_RESET}"
     fi
 
+    if [[ -z "$INPUT_IMAGE" ]]; then
+        INPUT_IMAGE="ghcr.io/${GITHUB_ACTION_REPOSITORY:-$GITHUB_REPOSITORY}-manylinux:latest"
+    fi
+
     # pull the image
     if [[ -n "$INPUT_PLATFORM" ]]; then
         docker pull -q --platform "$INPUT_PLATFORM" "$INPUT_IMAGE"

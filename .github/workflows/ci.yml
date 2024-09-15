@@ -7,6 +7,30 @@ env:
   IMAGE_BASE: ${{ github.repository }}
 
 jobs:
+  update-tag:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate tag
+        id: tag
+        shell: bash
+        run: |
+          tag="$(git describe --tags $(git rev-list --tags --max-count=1))"
+          echo "TAG=${tag%%.*}" >> $GITHUB_OUTPUT
+
+      - name: Update tag
+        uses: richardsimko/update-tag@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+
   build:
     runs-on: ubuntu-latest
 
@@ -37,6 +61,12 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ steps.prepare.outputs.IMAGE_NAME }}
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{raw}}
+            type=semver,pattern=v{{major}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -135,6 +165,12 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ steps.prepare.outputs.IMAGE_NAME }}
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{raw}}
+            type=semver,pattern=v{{major}}
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
