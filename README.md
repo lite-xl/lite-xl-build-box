@@ -38,6 +38,15 @@ It is based on manylinux_2014 with some workarounds to ensure libdecor support.
 - `gcc-c++-aarch64-linux-gnu`
 - `binutils-aarch64-linux-gnu`
 - `libdecor-devel` (package yanked from Raven Extras)
+- `appimagetool` (in `/opt/appimagetool/bin`)
+- `bsdtar` (in `/opt/appimagetool/bin`)
+- `mksquashfs` (in `/opt/appimagetool/bin`)
+- `unsquashfs` (in `/opt/appimagetool/bin`)
+- `desktop-file-install` (in `/opt/appimagetool/bin`)
+- `desktop-file-validate` (in `/opt/appimagetool/bin`)
+- `update-desktop-database` (in `/opt/appimagetool/bin`)
+- `appstreamcli` (in `/opt/appimagetool/bin`)
+- `zsyncmake` (in `/opt/appimagetool/bin`)
 
 # GitHub Actions
 

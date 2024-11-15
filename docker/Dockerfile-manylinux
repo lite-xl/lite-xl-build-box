@@ -53,6 +53,41 @@ RUN yum -y update && \
 # install meson and ninja
 RUN pip install --no-cache-dir --no-compile meson ninja
 
+# install appimagetool and friends
+RUN set -eux; \
+	arch=; \
+	tools="bsdtar mksquashfs unsquashfs desktop-file-install desktop-file-validate update-desktop-database appstreamcli zsyncmake"; \
+	case $TARGETARCH in \
+	'arm64') \
+		arch="aarch64"; \
+		;; \
+	'amd64') \
+		arch="x86_64"; \
+		;; \
+	'arm') \
+		arch="armhf"; \
+		;; \
+	'386') \
+		arch="i686"; \
+		;; \
+    *) \
+		echo >&2 "error: Unsupported architecture $TARGETARCH"; \
+		exit 1; \
+		;; \
+	esac; \
+	mkdir -p /opt/appimagetool/bin; \
+	wget -O /opt/appimagetool/bin/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$arch.AppImage"; \
+	for tool in $tools; do \
+		wget -O /opt/appimagetool/bin/$tool "https://github.com/probonopd/static-tools/releases/download/continuous/$tool-$arch"; \
+	done; \
+	chmod -R +x /opt/appimagetool/bin
+
+# tell appimages to extract themselves before running
+ENV APPIMAGE_EXTRACT_AND_RUN=1
+
+# add appimagetool to PATH
+ENV PATH="/opt/appimagetool/bin:$PATH"
+
 # pretend to have libdecor installed
 RUN rpm -i --force --nodeps --ignorearch "https://pkgs.sysadmins.ws/el8/extras/x86_64/libdecor-devel-0.1.0-3.el8.x86_64.rpm" && \
 	touch /usr/lib64/libdecor-0.so /usr/lib64/libdecor-0.so.0 && \
