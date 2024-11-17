@@ -31,6 +31,9 @@ ARG PYTHON_VERSION=cp311-cp311
 # get TARGETARCH from buildx
 ARG TARGETARCH
 
+# lpm version to install
+ARG LPM_VERSION=v1.3.1
+
 # use the manylinux built-in CPython
 ENV PATH="/opt/python/$PYTHON_VERSION/bin:$PATH"
 
@@ -87,6 +90,31 @@ ENV APPIMAGE_EXTRACT_AND_RUN=1
 
 # add appimagetool to PATH
 ENV PATH="/opt/appimagetool/bin:$PATH"
+
+# install lpm
+RUN set -eux; \
+	arch=; \
+	case $TARGETARCH in \
+	'arm64') \
+		arch="aarch64"; \
+		;; \
+	'amd64') \
+		arch="x86_64"; \
+		;; \
+	'arm') \
+		arch="arm"; \
+		;; \
+    *) \
+		echo >&2 "error: Unsupported architecture $TARGETARCH"; \
+		exit 1; \
+		;; \
+	esac; \
+	mkdir -p /opt/lpm/bin; \
+	wget -O /opt/lpm/bin/lpm "https://github.com/lite-xl/lite-xl-plugin-manager/releases/download/${LPM_VERSION}/lpm.$arch-linux"; \
+	chmod +x /opt/lpm/bin/lpm
+
+# add lpm to PATH
+ENV PATH="/opt/lpm/bin:$PATH"
 
 # pretend to have libdecor installed
 RUN rpm -i --force --nodeps --ignorearch "https://pkgs.sysadmins.ws/el8/extras/x86_64/libdecor-devel-0.1.0-3.el8.x86_64.rpm" && \

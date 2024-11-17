@@ -22,6 +22,9 @@ FROM ubuntu:18.04
 
 ARG TARGETARCH
 
+# lpm version to install
+ARG LPM_VERSION=v1.3.1
+
 # copy entrypoint into image
 COPY entrypoint.sh /
 
@@ -59,9 +62,6 @@ RUN set -eux; \
 	'arm') \
 		arch="armhf"; \
 		;; \
-	'386') \
-		arch="i686"; \
-		;; \
     *) \
 		echo >&2 "error: Unsupported architecture $TARGETARCH"; \
 		exit 1; \
@@ -79,6 +79,31 @@ ENV APPIMAGE_EXTRACT_AND_RUN=1
 
 # add appimagetool to PATH
 ENV PATH="/opt/appimagetool/bin:$PATH"
+
+# install lpm
+RUN set -eux; \
+	arch=; \
+	case $TARGETARCH in \
+	'arm64') \
+		arch="aarch64"; \
+		;; \
+	'amd64') \
+		arch="x86_64"; \
+		;; \
+	'arm') \
+		arch="arm"; \
+		;; \
+    *) \
+		echo >&2 "error: Unsupported architecture $TARGETARCH"; \
+		exit 1; \
+		;; \
+	esac; \
+	mkdir -p /opt/lpm/bin; \
+	wget -O /opt/lpm/bin/lpm "https://github.com/lite-xl/lite-xl-plugin-manager/releases/download/${LPM_VERSION}/lpm.$arch-linux"; \
+	chmod +x /opt/lpm/bin/lpm
+
+# add lpm to PATH
+ENV PATH="/opt/lpm/bin:$PATH"
 
 # pretend to have libdecor
 RUN wget "http://archive.ubuntu.com/ubuntu/pool/main/libd/libdecor-0/libdecor-0-dev_0.1.0-3build1_amd64.deb" && \

@@ -47,6 +47,7 @@ It is based on manylinux_2014 with some workarounds to ensure libdecor support.
 - `update-desktop-database` (in `/opt/appimagetool/bin`)
 - `appstreamcli` (in `/opt/appimagetool/bin`)
 - `zsyncmake` (in `/opt/appimagetool/bin`)
+- `lpm` (in `/opt/lpm/bin`)
 
 # GitHub Actions
 
