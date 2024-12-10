@@ -68,7 +68,7 @@ RUN set -eux; \
 		;; \
 	esac; \
 	mkdir -p /opt/appimagetool/bin; \
-	wget -O /opt/appimagetool/bin/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$arch.AppImage"; \
+	wget -O /opt/appimagetool/bin/appimagetool "https://github.com/AppImage/appimagetool/releases/download/1.9.0/appimagetool-$arch.AppImage"; \
 	for tool in $tools; do \
 		wget -O /opt/appimagetool/bin/$tool "https://github.com/probonopd/static-tools/releases/download/continuous/$tool-$arch"; \
 	done; \
