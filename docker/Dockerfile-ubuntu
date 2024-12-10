@@ -111,3 +111,4 @@ RUN wget "http://archive.ubuntu.com/ubuntu/pool/main/libd/libdecor-0/libdecor-0-
 	rm -f "libdecor-0-dev_0.1.0-3build1_amd64.deb" && \
 	perl -i~ -pe 's|\QDepends: libdecor-0-0 (= 0.1.0-3build1), libwayland-dev\E\n||g' /var/lib/dpkg/status && \
 	touch /usr/lib/$(dpkg-architecture -q DEB_TARGET_MULTIARCH)/libdecor-0.so /usr/lib/$(dpkg-architecture -q DEB_TARGET_MULTIARCH)/libdecor-0.so.0
+

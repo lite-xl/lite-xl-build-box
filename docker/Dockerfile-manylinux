@@ -47,14 +47,33 @@ RUN if [[ $TARGETARCH = 'arm64' ]]; then \
 
 # install deps
 RUN yum -y update && \
-	yum -y install wget curl zip unzip ccache fuse fuse3 sudo \
-		libX11-devel libXi-devel libXcursor-devel libxkbcommon-devel libXrandr-devel wayland-devel wayland-protocols-devel dbus-devel ibus-devel SDL2-devel \
+	yum -y install wget curl zip unzip ccache fuse fuse3 sudo cmake \
+		mesa-libGL-devel mesa-libEGL-devel mesa-libgbm-devel libX11-devel libXi-devel libXcursor-devel libxkbcommon-devel libXrandr-devel libXrender-devel \
+		libXext-devel libXinerama-devel dbus-devel ibus-devel libxml2-devel \
 		gcc-aarch64-linux-gnu gcc-c++-aarch64-linux-gnu binutils-aarch64-linux-gnu && \
 	yum -y clean all && \
 	rm -fr /var/cache
 
 # install meson and ninja
 RUN pip install --no-cache-dir --no-compile meson ninja
+
+# install and build wayland
+RUN wget https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.23.0/downloads/wayland-1.23.0.tar.xz && \
+	tar -xJf wayland-1.23.0.tar.xz && \
+	cd wayland-1.23.0 && \
+	meson setup build --prefix=/usr -Dtests=false -Ddocumentation=false && \
+	meson install -C build && \
+	cd .. && \
+	rm -rf wayland-1.23.0
+
+# install and build wayland-protocols
+RUN wget https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.38/downloads/wayland-protocols-1.38.tar.xz && \
+	tar -xJf wayland-protocols-1.38.tar.xz && \
+	cd wayland-protocols-1.38 && \
+	meson setup build --prefix=/usr -Dtests=false && \
+	meson install -C build && \
+	cd .. && \
+	rm -rf wayland-protocols-1.38
 
 # install appimagetool and friends
 RUN set -eux; \
@@ -122,3 +141,4 @@ RUN rpm -i --force --nodeps --ignorearch "https://pkgs.sysadmins.ws/el8/extras/x
 	yum -y history sync && \
 	yum -y clean all && \
 	rm -fr /var/cache
+
