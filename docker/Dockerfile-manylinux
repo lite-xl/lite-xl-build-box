@@ -57,23 +57,48 @@ RUN yum -y update && \
 # install meson and ninja
 RUN pip install --no-cache-dir --no-compile meson ninja
 
+# FIXME: replace these when freedesktop.org goes up
+
 # install and build wayland
-RUN wget https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.23.0/downloads/wayland-1.23.0.tar.xz && \
-	tar -xJf wayland-1.23.0.tar.xz && \
-	cd wayland-1.23.0 && \
+#RUN wget https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.23.0/downloads/wayland-1.23.0.tar.xz && \
+#	tar -xzf wayland-1.23.1.tar.gz && \
+RUN git clone https://code.hyprland.org/fdo-mirrors/wayland.git --branch 1.23.1 wayland-1.23.1 && \
+	cd wayland-1.23.1 && \
 	meson setup build --prefix=/usr -Dtests=false -Ddocumentation=false && \
 	meson install -C build && \
 	cd .. && \
-	rm -rf wayland-1.23.0
+	rm -rf wayland-1.23.1
 
 # install and build wayland-protocols
-RUN wget https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.38/downloads/wayland-protocols-1.38.tar.xz && \
-	tar -xJf wayland-protocols-1.38.tar.xz && \
-	cd wayland-protocols-1.38 && \
+# RUN wget https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.38/downloads/wayland-protocols-1.38.tar.xz && \
+#	tar -xJf wayland-protocols-1.41.tar.gz && \
+RUN git clone https://code.hyprland.org/fdo-mirrors/wayland-protocols.git --branch 1.41 wayland-protocols-1.41 && \
+	cd wayland-protocols-1.41 && \
 	meson setup build --prefix=/usr -Dtests=false && \
 	meson install -C build && \
 	cd .. && \
-	rm -rf wayland-protocols-1.38
+	rm -rf wayland-protocols-1.41
+
+# pretend to have libdecor installed
+RUN rpm -i --force --nodeps --ignorearch "https://pkgs.sysadmins.ws/el8/base/x86_64/libdecor-devel-0.2.2-5.el8.x86_64.rpm" && \
+	touch /usr/lib64/libdecor-0.so /usr/lib64/libdecor-0.so.0 && \
+	yum -y history sync && \
+	yum -y clean all && \
+	rm -fr /var/cache
+
+# install and build SDL3
+RUN wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8.tar.gz && \
+	tar -xzf SDL3-3.2.8.tar.gz && \
+	cd SDL3-3.2.8 && \
+	mkdir build && \
+	cd build && \
+	cmake -GNinja .. \
+		-DSDL_INSTALL=ON -DSDL_INSTALL_DOCS=OFF \
+		-DSDL_SYSTEM_ICONV=OFF -DSDL_DBUS=ON -DSDL_IBUS=ON -DSDL_AUDIO=OFF -DSDL_GPU=OFF \
+		-DSDL_CAMERA=OFF -DSDL_JOYSTICK=OFF -DSDL_HAPTIC=OFF -DSDL_HIDAPI=OFF \
+		-DSDL_POWER=OFF -DSDL_SENSOR=OFF -DSDL_DIRECTX=OFF -DSDL_XINPUT=OFF -DSDL_VULKAN=OFF \
+		-DSDL_LIBUDEV=OFF -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF && \
+	ninja install
 
 # install appimagetool and friends
 RUN set -eux; \
@@ -134,11 +159,4 @@ RUN set -eux; \
 
 # add lpm to PATH
 ENV PATH="/opt/lpm/bin:$PATH"
-
-# pretend to have libdecor installed
-RUN rpm -i --force --nodeps --ignorearch "https://pkgs.sysadmins.ws/el8/extras/x86_64/libdecor-devel-0.1.0-3.el8.x86_64.rpm" && \
-	touch /usr/lib64/libdecor-0.so /usr/lib64/libdecor-0.so.0 && \
-	yum -y history sync && \
-	yum -y clean all && \
-	rm -fr /var/cache
 
