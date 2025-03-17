@@ -1,8 +1,7 @@
 # Lite XL Build Box
 
 > [!IMPORTANT]
-> The Ubuntu variant of the build box is considered obsolete and will be removed in the future.
-> Please migrate to the CentOS variant.
+> As of v4.0.0, the Ubuntu variant **is no longer available**.
 
 This is a Docker image of the setup used to build Lite XL.
 It is based on manylinux_2014 with some workarounds to ensure libdecor support.
@@ -92,47 +91,4 @@ you can pass a script directly, similar to `run` by specifying
 
 If you don't use the entrypoint, GitHub Actions will concatenate all the lines
 into a single line.
-
-<details>
-<summary>Instructions for Ubuntu</summary>
-
-# Installed packages
-
-- `ccache`
-- `sudo`
-- `build-essential`
-- `python3`
-- `python3-pip`
-- `git`
-- `cmake`
-- `meson`
-- `ninja`
-- `libfuse2`
-- `wayland-protocols`
-- `libsdl2-dev`
-- `clang`
-- `gcc-aarch64-linux-gnu`
-- `binutils-aarch64-linux-gnu`
-- `libdecor-0-dev` (package yanked from Ubuntu 20.04)
-
-# Step Entrypoint
-
-When using this container image (v2.2.0 and above) in a step (with `docker://`),
-you can pass a script directly, similar to `run` by specifying
-`entrypoint: /entrypoint.sh`. For example:
-
-```yaml
-- name: Build AppImages
-  uses: docker://ghcr.io/lite-xl/lite-xl-build-box:v2.2.0
-  with:
-    entrypoint: /entrypoint.sh
-    args: |
-      bash scripts/appimage.sh --debug --static --version ${INSTALL_REF} --release
-      bash scripts/appimage.sh --debug --nobuild --addons --version ${INSTALL_REF}
-```
-
-If you don't use the entrypoint, GitHub Actions will concatenate all the lines
-into a single line.
-
-</details>
 
