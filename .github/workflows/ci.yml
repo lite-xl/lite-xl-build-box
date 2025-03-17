@@ -42,7 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         suffix:
-          - "ubuntu"
+          #- "ubuntu"
           - "manylinux"
         platform:
           - linux/arm64
