@@ -54,18 +54,15 @@ The recommended way of using this build box is via the `lite-xl-build-box` Actio
 This action sets up the container environment correctly and runs a script in the container.
 
 ```yaml
-- name: Set up QEMU
-  uses: docker/setup-qemu-action@v3
-
 - name: Build AppImages
-  uses: lite-xl/lite-xl-build-box@v3
+  uses: lite-xl/lite-xl-build-box@v4
   with:
     run: |
       bash scripts/appimage.sh --debug --static --version ${INSTALL_REF} --release
       bash scripts/appimage.sh --debug --nobuild --addons --version ${INSTALL_REF}
 
 - name: Build AppImages (aarch64)
-  uses: lite-xl/lite-xl-build-box@v3
+  uses: lite-xl/lite-xl-build-box@v4
   with:
     platform: linux/arm64
     run: |
