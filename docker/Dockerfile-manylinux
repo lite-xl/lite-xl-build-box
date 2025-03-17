@@ -62,7 +62,7 @@ RUN pip install --no-cache-dir --no-compile meson ninja
 # install and build wayland
 #RUN wget https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.23.0/downloads/wayland-1.23.0.tar.xz && \
 #	tar -xzf wayland-1.23.1.tar.gz && \
-RUN git clone https://code.hyprland.org/fdo-mirrors/wayland.git --branch 1.23.1 wayland-1.23.1 && \
+RUN git clone https://invent.kde.org/mirrors/wayland.git --branch 1.23.1 wayland-1.23.1 && \
 	cd wayland-1.23.1 && \
 	meson setup build --prefix=/usr -Dtests=false -Ddocumentation=false && \
 	meson install -C build && \
@@ -72,7 +72,7 @@ RUN git clone https://code.hyprland.org/fdo-mirrors/wayland.git --branch 1.23.1 
 # install and build wayland-protocols
 # RUN wget https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.38/downloads/wayland-protocols-1.38.tar.xz && \
 #	tar -xJf wayland-protocols-1.41.tar.gz && \
-RUN git clone https://code.hyprland.org/fdo-mirrors/wayland-protocols.git --branch 1.41 wayland-protocols-1.41 && \
+RUN git clone https://invent.kde.org/mirrors/wayland-protocols.git --branch 1.41 wayland-protocols-1.41 && \
 	cd wayland-protocols-1.41 && \
 	meson setup build --prefix=/usr -Dtests=false && \
 	meson install -C build && \
