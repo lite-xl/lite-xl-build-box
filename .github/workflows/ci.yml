@@ -137,8 +137,8 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - { suffix: "", original: "ubuntu" }
-          - { suffix: "-ubuntu", original: "ubuntu" }
+          - { suffix: "", original: "manylinux" }
+          #- { suffix: "-ubuntu", original: "ubuntu" }
           - { suffix: "-manylinux", original: "manylinux" }
 
     steps:
