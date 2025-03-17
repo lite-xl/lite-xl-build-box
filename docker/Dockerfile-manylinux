@@ -98,7 +98,9 @@ RUN wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-
 		-DSDL_CAMERA=OFF -DSDL_JOYSTICK=OFF -DSDL_HAPTIC=OFF -DSDL_HIDAPI=OFF \
 		-DSDL_POWER=OFF -DSDL_SENSOR=OFF -DSDL_DIRECTX=OFF -DSDL_XINPUT=OFF -DSDL_VULKAN=OFF \
 		-DSDL_LIBUDEV=OFF -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF && \
-	ninja install
+	ninja install && \
+	cd ../.. && \
+	rm -rf SDL3-3.2.8
 
 # install appimagetool and friends
 RUN set -eux; \
