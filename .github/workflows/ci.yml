@@ -32,7 +32,7 @@ jobs:
           tag_name: ${{ steps.tag.outputs.TAG }}
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform.run }}
 
     permissions:
       contents: read
@@ -45,14 +45,14 @@ jobs:
           #- "ubuntu"
           - "manylinux"
         platform:
-          - linux/arm64
-          - linux/amd64
+          - { docker: linux/arm64, run: ubuntu-24.04-arm }
+          - { docker: linux/amd64, run: ubuntu-latest }
 
     steps:
       - name: Prepare
         id: prepare
         run: |
-          digest_key="${{ matrix.suffix }}_${{ matrix.platform }}"
+          digest_key="${{ matrix.suffix }}_${{ matrix.platform.docker }}"
           echo "DIGEST_KEY=${digest_key//\//-}" >> $GITHUB_OUTPUT
           echo "IMAGE_NAME=${{ env.REGISTRY }}/${{ env.IMAGE_BASE }}-${{ matrix.suffix }}" >> $GITHUB_OUTPUT
 
@@ -98,7 +98,7 @@ jobs:
         with:
           context: docker
           file: docker/Dockerfile-${{ matrix.suffix }}
-          platforms: ${{ matrix.platform }}
+          platforms: ${{ matrix.platform.docker }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ steps.prepare.outputs.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -191,21 +191,18 @@ jobs:
           docker buildx imagetools inspect ${{ steps.prepare.outputs.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
 
   smoke-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform.run }}
     needs: [merge]
 
     strategy:
       matrix:
         platform:
-          - linux/arm64
-          - linux/amd64
+          - { docker: linux/arm64, run: ubuntu-24.04-arm }
+          - { docker: linux/amd64, run: ubuntu-latest }
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Checkout Lite XL
         uses: actions/checkout@v4
@@ -216,7 +213,7 @@ jobs:
       - name: Configure Lite XL
         uses: ./
         with:
-          platform: ${{ matrix.platform }}
+          platform: ${{ matrix.platform.docker }}
           run: |
             cd lite-xl
             meson setup --wrap-mode=forcefallback build
