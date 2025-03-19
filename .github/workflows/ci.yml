@@ -42,7 +42,6 @@ jobs:
       fail-fast: false
       matrix:
         suffix:
-          #- "ubuntu"
           - "manylinux"
         platform:
           - { docker: linux/arm64, run: ubuntu-24.04-arm }
@@ -135,7 +134,6 @@ jobs:
       matrix:
         image:
           - { suffix: "", original: "manylinux" }
-          #- { suffix: "-ubuntu", original: "ubuntu" }
           - { suffix: "-manylinux", original: "manylinux" }
 
     steps:
