@@ -83,9 +83,9 @@ RUN rpm -i --force --nodeps --ignorearch "https://pkgs.sysadmins.ws/el8/base/x86
 	rm -fr /var/cache
 
 # install and build SDL3
-RUN wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8.tar.gz && \
-	tar -xzf SDL3-3.2.8.tar.gz && \
-	cd SDL3-3.2.8 && \
+RUN wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.26/SDL3-3.2.26.tar.gz && \
+	tar -xzf SDL3-3.2.26.tar.gz && \
+	cd SDL3-3.2.26 && \
 	mkdir build && \
 	cd build && \
 	cmake -GNinja .. -DCMAKE_INSTALL_PREFIX=/usr \
@@ -97,7 +97,7 @@ RUN wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-
 		-DSDL_X11=ON -DSDL_WAYLAND=ON -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF -DSDL_VENDOR_INFO=lite-xl && \
 	ninja install && \
 	cd ../.. && \
-	rm -rf SDL3-3.2.8
+	rm -rf SDL3-3.2.26
 
 # install appimagetool and friends
 RUN set -eux; \
